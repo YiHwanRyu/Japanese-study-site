@@ -79,4 +79,28 @@ class PostControllerTest {
 			.andDo(print());
 	}
 
+	@Test
+	@DisplayName("게시글 작성 시 제목은 필수 입력")
+	void titleValidationTest() throws Exception {
+
+		// given
+		PostCreate postCreate = PostCreate.builder()
+			.title("")
+			.content("게시글 내용")
+			.build();
+
+		String jsonValue = objectMapper.writeValueAsString(postCreate);
+
+		// expected
+		mockMvc.perform(post("/api/v1/posts")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(jsonValue))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.statusCode").value("400"))
+			.andExpect(jsonPath("$.errorMessage").value("잘못된 요청입니다."))
+			.andExpect(jsonPath("$.validationList[0].errorField").value("title"))
+			.andExpect(jsonPath("$.validationList[0].errorFieldMessage").value("제목은 필수입력입니다."))
+			.andDo(print());
+	}
+
 }
