@@ -103,4 +103,41 @@ class PostControllerTest {
 			.andDo(print());
 	}
 
+	@Test
+	@DisplayName("게시글 단일 조회 실패 테스트")
+	void getPostFailTest() throws Exception {
+		// given
+		Post post = Post.builder()
+			.title("게시글 제목입니다.")
+			.content("게시글 내용입니다.")
+			.build();
+
+		postRepository.save(post);
+
+		// expected
+		mockMvc.perform(get("/api/v1/posts/{postId}", post.getId() + 1L))
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.statusCode").value("404"))
+			.andExpect(jsonPath("$.errorMessage").value("게시글을 찾을 수 없습니다."))
+			.andExpect(jsonPath("$.validationList").isEmpty())
+			.andDo(print());
+	}
+
+	@Test
+	@DisplayName("게시글 삭제 컨트롤러 테스트")
+	void deletePostTest() throws Exception {
+		// given
+		Post post = Post.builder()
+			.title("게시글 제목입니다.")
+			.content("게시글 내용입니다.")
+			.build();
+
+		postRepository.save(post);
+
+		// expected
+		mockMvc.perform(delete("/api/v1/posts/{postId}", post.getId()))
+			.andExpect(status().isOk())
+			.andDo(print());
+	}
+
 }
