@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.studynippon.api.domain.Post;
 import com.studynippon.api.dto.request.PostCreate;
 import com.studynippon.api.dto.response.PostDetail;
+import com.studynippon.api.exception.PostNotFound;
 import com.studynippon.api.repository.PostRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -40,9 +41,7 @@ public class PostService {
 	 */
 	public ResponseEntity<PostDetail> getPost(Long postId) {
 
-		Post post = postRepository.findById(postId).orElseThrow(
-			() -> new IllegalArgumentException("존재하지 않는 게시글입니다.")
-		);
+		Post post = getPostById(postId);
 
 		PostDetail postDetail = PostDetail.builder()
 			.title(post.getTitle())
