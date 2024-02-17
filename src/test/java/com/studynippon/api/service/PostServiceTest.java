@@ -66,4 +66,22 @@ class PostServiceTest {
 		assertThat(postDetail.getContent()).isEqualTo("내용2");
 	}
 
+	@Test
+	@DisplayName("게시글 삭제 검증")
+	void deletePostTest() {
+		// given
+		Post post = Post.builder()
+			.title("제목")
+			.content("내용")
+			.build();
+
+		postRepository.save(post);
+
+		// when
+		postService.deletePost(post.getId());
+
+		// then
+		assertThat(postRepository.count()).isEqualTo(0L);
+	}
+
 }

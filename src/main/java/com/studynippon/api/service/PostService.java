@@ -53,4 +53,23 @@ public class PostService {
 			.status(OK)
 			.body(postDetail);
 	}
+
+	/**
+	 * 게시글 삭제 메서드
+	 */
+	public ResponseEntity<Void> deletePost(Long postId) {
+
+		Post post = getPostById(postId);
+
+		postRepository.delete(post);
+
+		return ResponseEntity
+			.status(OK)
+			.build();
+	}
+
+	// post find 메서드
+	private Post getPostById(Long postId) {
+		return postRepository.findById(postId).orElseThrow(PostNotFound::new);
+	}
 }
