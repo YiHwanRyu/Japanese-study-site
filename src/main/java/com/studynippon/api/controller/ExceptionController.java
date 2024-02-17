@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.studynippon.api.dto.response.ErrorResponse;
 import com.studynippon.api.dto.response.Validation;
+import com.studynippon.api.exception.CustomException;
 
 @RestControllerAdvice
 public class ExceptionController {
@@ -43,6 +44,24 @@ public class ExceptionController {
 		return ResponseEntity
 			.status(BAD_REQUEST)
 			.body(response);
+	}
+
+	/**
+	 * 커스텀 예외 핸들러 메서드
+	 */
+	@ExceptionHandler(CustomException.class)
+	public ResponseEntity<ErrorResponse> customExceptionHandler(CustomException e) {
+
+		ErrorResponse errorResponse = ErrorResponse.builder()
+			.statusCode(String.valueOf(e.getStatusCode()))
+			.errorMessage(e.getMessage())
+			.validationList(e.getValidationList())
+			.build();
+
+		return ResponseEntity
+			.status(e.getStatusCode())
+			.body(errorResponse);
+
 	}
 
 }
