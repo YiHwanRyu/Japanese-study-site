@@ -1,5 +1,7 @@
 package com.studynippon.api.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +37,14 @@ public class PostController {
 	@GetMapping("/api/v1/posts/{postId}")
 	public ResponseEntity<PostDetail> getPost(@PathVariable Long postId) {
 		return postService.getPost(postId);
+	}
+
+	/**
+	 * 게시글 리스트 조회
+	 */
+	@GetMapping("/api/v1/posts")
+	public ResponseEntity<List<PostDetail>> getPostList() {
+		return postService.getPostList();
 	}
 
 	/**

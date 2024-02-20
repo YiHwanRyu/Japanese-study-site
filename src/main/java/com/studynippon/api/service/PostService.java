@@ -2,6 +2,8 @@ package com.studynippon.api.service;
 
 import static org.springframework.http.HttpStatus.*;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -70,5 +72,22 @@ public class PostService {
 	// post find 메서드
 	private Post getPostById(Long postId) {
 		return postRepository.findById(postId).orElseThrow(PostNotFound::new);
+	}
+
+	/**
+	 * 게시글 리스트 조회 메서드
+	 */
+	public ResponseEntity<List<PostDetail>> getPostList() {
+
+		List<PostDetail> postList = postRepository.findAll().stream()
+			.map(post -> PostDetail.builder()
+					.title(post.getTitle())
+					.content(post.getContent())
+					.build())
+			.toList();
+
+		return ResponseEntity
+			.status(OK)
+			.body(postList);
 	}
 }
