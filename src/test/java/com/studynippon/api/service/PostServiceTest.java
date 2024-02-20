@@ -2,6 +2,8 @@ package com.studynippon.api.service;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -82,6 +84,30 @@ class PostServiceTest {
 
 		// then
 		assertThat(postRepository.count()).isEqualTo(0L);
+	}
+
+	@Test
+	@DisplayName("게시글 리스트 조회 검증")
+	void getPostListTest() {
+		// given
+		Post post1 = Post.builder()
+			.title("제목1")
+			.content("내용1")
+			.build();
+
+		Post post2 = Post.builder()
+			.title("제목2")
+			.content("내용2")
+			.build();
+
+		postRepository.saveAll(List.of(post1, post2));
+
+		// when
+		List<PostDetail> postList = postService.getPostList().getBody();
+
+		// then
+		assertThat(postList).hasSize(2);
+
 	}
 
 }

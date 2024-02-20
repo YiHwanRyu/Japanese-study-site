@@ -4,6 +4,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -140,4 +142,29 @@ class PostControllerTest {
 			.andDo(print());
 	}
 
+	@Test
+	@DisplayName("게시글 리스트 조회 테스트")
+	void getPostListTest() throws Exception {
+		// given
+		Post post1 = Post.builder()
+			.title("제목1")
+			.content("내용1")
+			.build();
+
+		Post post2 = Post.builder()
+			.title("제목2")
+			.content("내용2")
+			.build();
+
+		postRepository.saveAll(List.of(post1, post2));
+
+		// expected
+		mockMvc.perform(get("/api/v1/posts"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$[0].title").value("제목1"))
+			.andExpect(jsonPath("$[0].content").value("내용1"))
+			.andExpect(jsonPath("$[1].title").value("제목2"))
+			.andExpect(jsonPath("$[1].content").value("내용2"))
+			.andDo(print());
+	}
 }
