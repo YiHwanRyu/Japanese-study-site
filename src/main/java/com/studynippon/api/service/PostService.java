@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.studynippon.api.domain.Post;
+import com.studynippon.api.entity.Post;
 import com.studynippon.api.dto.request.PostCreate;
 import com.studynippon.api.dto.response.PostDetail;
 import com.studynippon.api.exception.PostNotFound;

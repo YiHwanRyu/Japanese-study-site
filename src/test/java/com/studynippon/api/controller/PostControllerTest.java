@@ -16,7 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.studynippon.api.domain.Post;
+import com.studynippon.api.entity.Post;
 import com.studynippon.api.dto.request.PostCreate;
 import com.studynippon.api.repository.PostRepository;
 import com.studynippon.api.service.PostService;

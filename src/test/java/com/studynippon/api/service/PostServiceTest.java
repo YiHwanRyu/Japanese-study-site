@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.studynippon.api.domain.Post;
+import com.studynippon.api.entity.Post;
 import com.studynippon.api.dto.request.PostCreate;
 import com.studynippon.api.dto.response.PostDetail;
 import com.studynippon.api.repository.PostRepository;
