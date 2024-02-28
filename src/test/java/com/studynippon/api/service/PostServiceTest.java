@@ -3,6 +3,7 @@ package com.studynippon.api.service;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -10,9 +11,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.studynippon.api.entity.Post;
 import com.studynippon.api.dto.request.PostCreate;
+import com.studynippon.api.dto.request.PostSearch;
+import com.studynippon.api.dto.response.PageResponse;
 import com.studynippon.api.dto.response.PostDetail;
+import com.studynippon.api.entity.Post;
 import com.studynippon.api.repository.PostRepository;
 
 @SpringBootTest
@@ -87,26 +90,74 @@ class PostServiceTest {
 	}
 
 	@Test
-	@DisplayName("게시글 리스트 조회 검증")
-	void getPostListTest() {
+	@DisplayName("게시글 첫 페이지, 5개씩 등록기준 내림차순 조회 검증")
+	void getPostListFirstPageTest() {
+
 		// given
-		Post post1 = Post.builder()
-			.title("제목1")
-			.content("내용1")
-			.build();
+		List<Post> postRequestList = IntStream.range(1, 31)
+			.mapToObj(
+				i -> Post.builder()
+				.title("제목" + i)
+				.content("내용" + i)
+				.build()
+			).toList();
 
-		Post post2 = Post.builder()
-			.title("제목2")
-			.content("내용2")
-			.build();
+		postRepository.saveAll(postRequestList);
 
-		postRepository.saveAll(List.of(post1, post2));
+		PostSearch postSearch = PostSearch.builder()
+			.pageNumber(0)
+			.pageSize("PAGE_SIZE_5")
+			.pageSort("DESC")
+			.sortParam("SORT_BY_DATE")
+			.build();
 
 		// when
-		List<PostDetail> postList = postService.getPostList().getBody();
+		PageResponse pageResponse = postService.getPostList(postSearch).getBody();
 
 		// then
-		assertThat(postList).hasSize(2);
+		assertThat(pageResponse).isNotNull();
+		assertThat(pageResponse.getPostDtoList()).hasSize(5);
+		assertThat(pageResponse.getPostDtoList().get(0).getTitle()).isEqualTo("제목30");
+		assertThat(pageResponse.getPostDtoList().get(0).getContent()).isEqualTo("내용30");
+		assertThat(pageResponse.getTotalPages()).isEqualTo(30 / 5);
+		assertThat(pageResponse.isFirstPage()).isTrue();
+		assertThat(pageResponse.isLastPage()).isFalse();
+
+	}
+
+	@Test
+	@DisplayName("게시글 마지막 페이지, 10개씩 등록기준 오름차순 조회 검증")
+	void getPostListLastPageTest() {
+
+		// given
+		List<Post> postRequestList = IntStream.range(1, 31)
+			.mapToObj(
+				i -> Post.builder()
+					.title("제목" + i)
+					.content("내용" + i)
+					.build()
+			).toList();
+
+		postRepository.saveAll(postRequestList);
+
+		PostSearch postSearch = PostSearch.builder()
+			.pageNumber(3)
+			.pageSize("PAGE_SIZE_10")
+			.pageSort("ASC")
+			.sortParam("SORT_BY_DATE")
+			.build();
+
+		// when
+		PageResponse pageResponse = postService.getPostList(postSearch).getBody();
+
+		// then
+		assertThat(pageResponse).isNotNull();
+		assertThat(pageResponse.getPostDtoList()).hasSize(10);
+		assertThat(pageResponse.getPostDtoList().get(0).getTitle()).isEqualTo("제목21");
+		assertThat(pageResponse.getPostDtoList().get(0).getContent()).isEqualTo("내용21");
+		assertThat(pageResponse.getTotalPages()).isEqualTo(30 / 10);
+		assertThat(pageResponse.isFirstPage()).isFalse();
+		assertThat(pageResponse.isLastPage()).isTrue();
 
 	}
 
