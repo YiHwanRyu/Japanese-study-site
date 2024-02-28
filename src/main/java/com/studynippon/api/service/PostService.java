@@ -4,14 +4,22 @@ import static org.springframework.http.HttpStatus.*;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.studynippon.api.entity.Post;
 import com.studynippon.api.dto.request.PostCreate;
+import com.studynippon.api.dto.request.PostSearch;
+import com.studynippon.api.dto.response.PageResponse;
 import com.studynippon.api.dto.response.PostDetail;
+import com.studynippon.api.entity.Post;
 import com.studynippon.api.exception.PostNotFound;
 import com.studynippon.api.repository.PostRepository;
+import com.studynippon.api.validation.enums.PageSize;
+import com.studynippon.api.validation.enums.SortParam;
 
 import lombok.RequiredArgsConstructor;
 
@@ -75,19 +83,39 @@ public class PostService {
 	}
 
 	/**
-	 * 게시글 리스트 조회 메서드
+	 * 게시글 페이징 조회 메서드
 	 */
-	public ResponseEntity<List<PostDetail>> getPostList() {
+	public ResponseEntity<PageResponse> getPostList(PostSearch postSearch) {
 
-		List<PostDetail> postList = postRepository.findAll().stream()
-			.map(post -> PostDetail.builder()
-					.title(post.getTitle())
-					.content(post.getContent())
-					.build())
-			.toList();
+		// variables for pageable
+		int pageNumber = Math.max(postSearch.getPageNumber() - 1, 0); // pageable index 0부터 시작
+		int pageSize = PageSize.valueOf(postSearch.getPageSize()).getSizeValue();
+		Sort.Direction sortValue = Sort.Direction.valueOf(postSearch.getPageSort());
+		String sortParam = SortParam.valueOf(postSearch.getSortParam()).getSortParamValue();
+
+		// pageable by PageRequest
+		Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortValue, sortParam));
+
+		// page
+		Page<Post> page = postRepository.findAll(pageable);
+
+		// postList from page
+		List<PostDetail> postList = page.getContent().stream().map(
+			post -> PostDetail.builder()
+				.title(post.getTitle())
+				.content(post.getContent())
+				.build()).toList();
+
+		// page to dto
+		PageResponse pageResponse = PageResponse.builder()
+			.firstPage(page.isFirst())
+			.lastPage(page.isLast())
+			.totalPages(page.getTotalPages())
+			.postDtoList(postList)
+			.build();
 
 		return ResponseEntity
 			.status(OK)
-			.body(postList);
+			.body(pageResponse);
 	}
 }

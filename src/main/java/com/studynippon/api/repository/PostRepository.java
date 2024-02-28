@@ -7,4 +7,5 @@ import com.studynippon.api.entity.Post;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
+
 }

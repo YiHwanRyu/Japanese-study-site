@@ -1,7 +1,5 @@
 package com.studynippon.api.controller;
 
-import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.studynippon.api.dto.request.PostCreate;
+import com.studynippon.api.dto.request.PostSearch;
+import com.studynippon.api.dto.response.PageResponse;
 import com.studynippon.api.dto.response.PostDetail;
 import com.studynippon.api.service.PostService;
 
@@ -43,8 +43,8 @@ public class PostController {
 	 * 게시글 리스트 조회
 	 */
 	@GetMapping("/api/v1/posts")
-	public ResponseEntity<List<PostDetail>> getPostList() {
-		return postService.getPostList();
+	public ResponseEntity<PageResponse> getPostList(@RequestBody @Valid PostSearch postSearch) {
+		return postService.getPostList(postSearch);
 	}
 
 	/**
