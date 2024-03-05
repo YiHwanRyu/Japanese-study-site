@@ -1,5 +1,6 @@
 package com.studynippon.api.controller;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -18,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.studynippon.api.dto.request.PostCreate;
+import com.studynippon.api.dto.request.PostEdit;
 import com.studynippon.api.dto.request.PostSearch;
 import com.studynippon.api.entity.Post;
 import com.studynippon.api.repository.PostRepository;
@@ -290,5 +292,64 @@ class PostControllerTest {
 			.andExpect(jsonPath("$.validationList[0].errorField").value("sortParam"))
 			.andExpect(jsonPath("$.validationList[0].errorFieldMessage").value("등록순, 조회수, 좋아요 순만 정렬 가능합니다."))
 			.andDo(print());
+	}
+
+	@Test
+	@DisplayName("게시글 수정 빈 값 에러 컨트롤러 테스트")
+	void editPostErrorTest() throws Exception {
+		// given
+		Post post = Post.builder()
+			.title("게시글 제목입니다.")
+			.content("게시글 내용입니다.")
+			.build();
+
+		postRepository.save(post);
+
+		PostEdit postEdit = PostEdit.builder()
+			.title(null)
+			.content("게시글 내용 수정")
+			.build();
+
+		String jsonValue = objectMapper.writeValueAsString(postEdit);
+
+		// expected
+		mockMvc.perform(put("/api/v1/posts/{postId}", post.getId())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(jsonValue))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.errorMessage").value("잘못된 요청입니다."))
+			.andExpect(jsonPath("$.validationList[0].errorField").value("title"))
+			.andExpect(jsonPath("$.validationList[0].errorFieldMessage").value("수정 시 제목은 필수 입력입니다."))
+			.andDo(print());
+	}
+
+	@Test
+	@DisplayName("게시글 내용 수정 컨트롤러 테스트")
+	void editPostTest() throws Exception {
+		// given
+		Post post = Post.builder()
+			.title("게시글 제목입니다.")
+			.content("게시글 내용입니다.")
+			.build();
+
+		postRepository.save(post);
+
+		PostEdit postEdit = PostEdit.builder()
+			.title("게시글 제목입니다.")
+			.content("게시글 내용 수정")
+			.build();
+
+		String jsonValue = objectMapper.writeValueAsString(postEdit);
+
+		// expected
+		mockMvc.perform(put("/api/v1/posts/{postId}", post.getId())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(jsonValue))
+			.andExpect(status().isOk())
+			.andDo(print());
+
+		assertThat(postRepository.findById(post.getId()).get().getTitle()).isEqualTo("게시글 제목입니다.");
+		assertThat(postRepository.findById(post.getId()).get().getContent()).isEqualTo("게시글 내용 수정");
+
 	}
 }

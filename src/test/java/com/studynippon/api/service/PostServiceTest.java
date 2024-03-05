@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.studynippon.api.dto.request.PostCreate;
+import com.studynippon.api.dto.request.PostEdit;
 import com.studynippon.api.dto.request.PostSearch;
 import com.studynippon.api.dto.response.PageResponse;
 import com.studynippon.api.dto.response.PostDetail;
@@ -160,5 +161,33 @@ class PostServiceTest {
 		assertThat(pageResponse.isLastPage()).isTrue();
 
 	}
+
+	@Test
+	@DisplayName("기존 게시글 수정 후 검증")
+	void editPostTest() {
+
+		// given
+		Post post = Post.builder()
+			.title("제목1")
+			.content("내용1")
+			.build();
+
+		postRepository.save(post);
+
+		// when
+		PostEdit postEdit = PostEdit.builder()
+			.title("제목 수정")
+			.content("내용 수정")
+			.build();
+
+		postService.editPost(post.getId(), postEdit);
+
+		// then
+		assertThat(postRepository.findById(post.getId())).isNotNull();
+		assertThat(postRepository.findById(post.getId()).get().getTitle()).isEqualTo("제목 수정");
+		assertThat(postRepository.findById(post.getId()).get().getContent()).isEqualTo("내용 수정");
+	}
+
+
 
 }
