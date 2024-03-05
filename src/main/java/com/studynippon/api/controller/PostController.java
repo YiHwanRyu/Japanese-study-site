@@ -5,10 +5,12 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.studynippon.api.dto.request.PostCreate;
+import com.studynippon.api.dto.request.PostEdit;
 import com.studynippon.api.dto.request.PostSearch;
 import com.studynippon.api.dto.response.PageResponse;
 import com.studynippon.api.dto.response.PostDetail;
@@ -53,5 +55,13 @@ public class PostController {
 	@DeleteMapping("/api/v1/posts/{postId}")
 	public ResponseEntity<Void> deletePost(@PathVariable Long postId) {
 		return postService.deletePost(postId);
+	}
+
+	/**
+	 * 게시글 수정
+	 */
+	@PutMapping("/api/v1/posts/{postId}")
+	public ResponseEntity<Void> editPost(@PathVariable Long postId, @RequestBody @Valid PostEdit postEdit) {
+		return postService.editPost(postId, postEdit);
 	}
 }

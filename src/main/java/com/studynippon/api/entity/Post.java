@@ -1,5 +1,7 @@
 package com.studynippon.api.entity;
 
+import com.studynippon.api.dto.request.PostEdit;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,5 +30,10 @@ public class Post {
 	public Post(String title, String content) {
 		this.title = title;
 		this.content = content;
+	}
+
+	public void editPost(PostEdit postEdit) {
+		this.title = postEdit.getTitle();
+		this.content = postEdit.getContent();
 	}
 }

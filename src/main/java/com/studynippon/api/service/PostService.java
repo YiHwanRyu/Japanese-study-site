@@ -10,8 +10,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.studynippon.api.dto.request.PostCreate;
+import com.studynippon.api.dto.request.PostEdit;
 import com.studynippon.api.dto.request.PostSearch;
 import com.studynippon.api.dto.response.PageResponse;
 import com.studynippon.api.dto.response.PostDetail;
@@ -117,5 +119,20 @@ public class PostService {
 		return ResponseEntity
 			.status(OK)
 			.body(pageResponse);
+	}
+
+	/**
+	 * 게시글 수정 메서드
+	 */
+	@Transactional(rollbackFor = Exception.class)
+	public ResponseEntity<Void> editPost(Long postId, PostEdit postEdit) {
+
+		Post post = getPostById(postId);
+
+		post.editPost(postEdit);
+
+		return ResponseEntity
+			.status(OK)
+			.build();
 	}
 }
