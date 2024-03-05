@@ -8,9 +8,10 @@ import lombok.Getter;
 @Builder
 public class PostCreate {
 
-	@NotEmpty(message = "제목은 필수입력입니다.")
+	@NotEmpty(message = "글 작성시 제목은 필수입력입니다.")
 	private String title;
 
+	@NotEmpty(message = "글 작성시 내용은 필수입력입니다.")
 	private String content;
 
 }

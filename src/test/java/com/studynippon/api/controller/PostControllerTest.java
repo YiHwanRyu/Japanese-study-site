@@ -103,7 +103,7 @@ class PostControllerTest {
 			.andExpect(jsonPath("$.statusCode").value("400"))
 			.andExpect(jsonPath("$.errorMessage").value("잘못된 요청입니다."))
 			.andExpect(jsonPath("$.validationList[0].errorField").value("title"))
-			.andExpect(jsonPath("$.validationList[0].errorFieldMessage").value("제목은 필수입력입니다."))
+			.andExpect(jsonPath("$.validationList[0].errorFieldMessage").value("글 작성시 제목은 필수입력입니다."))
 			.andDo(print());
 	}
 
